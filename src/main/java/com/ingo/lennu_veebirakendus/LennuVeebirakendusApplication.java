@@ -1,4 +1,4 @@
-package com.jetbrains.ingo.lennu_veebirakendus;
+package com.ingo.lennu_veebirakendus;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

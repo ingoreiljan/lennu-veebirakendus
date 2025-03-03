@@ -8,7 +8,7 @@
 		<version>3.4.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.jetbrains.ingo</groupId>
+	<groupId>com.ingo</groupId>
 	<artifactId>lennu-veebirakendus</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>lennu_veebirakendus</name>

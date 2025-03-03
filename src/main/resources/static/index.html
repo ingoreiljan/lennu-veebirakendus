@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner</title>
+</head>
+<body>
+
+<h1>Welcome to the Planner</h1>
+
+<h2>Current Planner Data:</h2>
+<ul id="planner-data">
+    <!-- List of planner data will be dynamically inserted here -->
+</ul>
+
+<script>
+    // Fetch planner data from the backend
+    fetch('/lennud')
+        .then(response => response.json())
+        .then(data => {
+            const plannerDataList = document.getElementById('planner-data');
+            data.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                plannerDataList.appendChild(li);
+            });
+        })
+        .catch(error => console.error('Error fetching data:', error));
+</script>
+
+</body>
+</html>
