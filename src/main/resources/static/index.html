@@ -10,23 +10,86 @@
 <h1>Welcome to the Planner</h1>
 
 <h2>Current Planner Data:</h2>
+
+<h3>Select your destination</h3>
+<form id="filter-form">
+    <label for="city">Select destination:</label>
+    <select name="city" id="city">
+        <!-- The "Show All" option will be dynamically added here -->
+    </select>
+    <br>
+    <input type="submit" value="Filter">
+</form>
+
+<h3>Flight Data:</h3>
 <ul id="planner-data">
     <!-- List of planner data will be dynamically inserted here -->
 </ul>
 
 <script>
-    // Fetch planner data from the backend
-    fetch('/lennud')
-        .then(response => response.json())
-        .then(data => {
-            const plannerDataList = document.getElementById('planner-data');
-            data.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                plannerDataList.appendChild(li);
-            });
-        })
-        .catch(error => console.error('Error fetching data:', error));
+    // Function to fetch flight data from the backend
+    function fetchFlights(city = '') {
+        let url = '/lennud';  // Default URL to fetch all flights
+
+        // If a city is selected, append the city filter to the URL
+        if (city && city !== 'all') {  // If not 'Show All'
+            url = `/filter?city=${city}`;
+        }
+
+        // Fetch flight data from the backend
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const plannerDataList = document.getElementById('planner-data');
+                plannerDataList.innerHTML = '';  // Clear any existing data
+
+                // Loop through the flight data and create list items for each flight
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = `City: ${item.city}, Date: ${item.date}, Time: ${item.time}`;
+                    plannerDataList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    // Function to fetch all cities and populate the dropdown
+    function fetchCities() {
+        fetch('/cities')  // Fetch all cities from the backend
+            .then(response => response.json())
+            .then(cities => {
+                const citySelect = document.getElementById('city');
+                citySelect.innerHTML = '';  // Clear existing options
+
+                // Add "Show All" option to the dropdown
+                const allOption = document.createElement('option');
+                allOption.value = 'all';
+                allOption.textContent = 'Show All';
+                citySelect.appendChild(allOption);
+
+                // Add an option for each city
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching cities:', error));
+    }
+
+    // Call fetchFlights when the page loads to display all flights initially
+    fetchFlights();
+
+    // Fetch all cities to populate the dropdown when the page loads
+    fetchCities();
+
+    // Add event listener to the form for filtering
+    document.getElementById('filter-form').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent the form from submitting and reloading the page
+        const selectedCity = document.getElementById('city').value;  // Get the selected city
+        fetchFlights(selectedCity);  // Fetch and display filtered flights
+    });
 </script>
 
 </body>
