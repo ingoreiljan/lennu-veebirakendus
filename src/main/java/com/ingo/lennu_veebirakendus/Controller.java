@@ -1,5 +1,6 @@
 package com.ingo.lennu_veebirakendus;
 
+import ch.qos.logback.core.model.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +33,19 @@ public class Controller {
                 .map(Flight::getCity)
                 .distinct()
                 .collect(Collectors.toList());  // Return unique cities
+    }
+
+
+
+    @GetMapping("/seatingdata")
+    public Flight getSeatingDetails(@RequestParam String city, @RequestParam String date, @RequestParam String time) {
+        List<Flight> allFlights = fileReader.readFile();
+        return allFlights.stream()
+                .filter(flight -> flight.getCity().equalsIgnoreCase(city)
+                        && flight.getDate().equals(date)
+                        && flight.getTime().equals(time))
+                .findFirst()
+                .orElse(null);  // Return null if no matching flight is found
     }
 
 }

@@ -46,14 +46,22 @@
                 // Loop through the flight data and create list items for each flight
                 data.forEach(item => {
                     const li = document.createElement('li');
+                    li.style.cursor = 'pointer';
                     li.textContent = `City: ${item.city}, Date: ${item.date}, Time: ${item.time}`;
+
+                    // Add click event to redirect to /seating with the selected flight's details
+                    li.addEventListener('click', function () {
+                        // Redirect to /seating page with query parameters
+                        window.location.href = `/seating.html?city=${item.city}&date=${item.date}&time=${item.time}`;
+                    });
+
                     plannerDataList.appendChild(li);
                 });
             })
-            .catch(error => console.error('Error fetching data:', error));
+            .catch(error => console.error('Error fetching flights:', error));
     }
 
-    // Function to fetch all cities and populate the dropdown
+    // Function to fetch all cities for the dropdown
     function fetchCities() {
         fetch('/cities')  // Fetch all cities from the backend
             .then(response => response.json())
