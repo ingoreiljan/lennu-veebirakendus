@@ -1,8 +1,9 @@
 package com.ingo.lennu_veebirakendus;
 
-import ch.qos.logback.core.model.Model;
+
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,11 +18,35 @@ public class Controller {
     }
 
     @GetMapping("/filter")
-    public List<Flight> getFilteredFlights(@RequestParam("city") String city) {
+    public List<Flight> getFilteredFlights(@RequestParam(value = "city", required = false) String city,
+                                           @RequestParam(value = "startDate", required = false) String startDate,
+                                           @RequestParam(value = "endDate", required = false) String endDate) {
         List<Flight> allFlights = fileReader.readFile();
+
         return allFlights.stream()
-                .filter(flight -> flight.getCity().equalsIgnoreCase(city))
+                .filter(flight -> (city == null || flight.getCity().equalsIgnoreCase(city)))
+                .filter(flight -> isWithinDateRange(flight.getDate(), startDate, endDate))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isWithinDateRange(String flightDate, String startDate, String endDate) {
+        if (startDate == null && endDate == null) return true;
+
+        try {
+            Date flight = new SimpleDateFormat("dd.MM.yyyy").parse(flightDate);
+            if (startDate != null) {
+                Date start = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+                if (flight.before(start)) return false;
+            }
+            if (endDate != null) {
+                Date end = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
+                if (flight.after(end)) return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @GetMapping("/cities")
@@ -54,6 +79,5 @@ public class Controller {
         Seats seats = new Seats(windowPref, legroomPref, occupiedSeats);
         return seats.getSeatData();
     }
-
 
 }
