@@ -2,20 +2,138 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flight Seating</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vali istekoht</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #343a40;
+      color: #fff;
+    }
+    .plane {
+      display: grid;
+      grid-template-columns: repeat(3, 50px) 50px repeat(3, 50px);
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      height: 600px;
+      width: 1110px;
+      padding: 20px;
+      background-color: #495057;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .seat {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-color: #6c757d;
+      color: #fff;
+      border-radius: 5px;
+    }
+    .occupied {
+      background-color: #ff4d4d;
+      pointer-events: none;
+    }
+    .selected {
+      background-color: #4caf50;
+    }
+    .recommended {
+      background-color: #ffd700;
+      color: #000;
+    }
+  </style>
 </head>
 <body>
+<div class="text-left mt-4">
+  <button onclick="goBack()" class="btn btn-outline-light">Tagasi lennu valikusse</button>
+</div>
 
-<h1>Flight Seating</h1>
 
-<!-- Display the selected flight information -->
-<h3>Selected Flight Details</h3>
-<p>City: <span>${selectedFlight.city}</span></p>
-<p>Date: <span>${selectedFlight.date}</span></p>
-<p>Time: <span>${selectedFlight.time}</span></p>
 
-<!-- You can add additional seating details here if needed -->
+<div class="container mt-4">
+  <h1 class="text-center mb-4">Vali istekoht</h1>
 
+  <div class="card bg-secondary mb-4">
+    <div class="card-body">
+      <div class="form-check form-check-inline">
+        <input type="checkbox" class="form-check-input" id="windowPref">
+        <label class="form-check-label" for="windowPref">Soovin akna alust kohta</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="checkbox" class="form-check-input" id="legroomPref">
+        <label class="form-check-label" for="legroomPref">Soovin rohkem jalaruumi</label>
+      </div>
+      <button onclick="fetchSeats()" class="btn btn-primary ml-3">Kinnita eelistused</button>
+    </div>
+  </div>
+
+  <div id="plane" class="plane"></div>
+  <p id="selectedSeat" class="text-center">Valitud koht: -</p>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+  function goBack() {
+    window.location.href = '/index.html';
+    }
+
+  const plane = document.getElementById('plane');
+  const selectedSeatDisplay = document.getElementById('selectedSeat');
+
+  function fetchSeats() {
+    const windowPref = document.getElementById('windowPref').checked;
+    const legroomPref = document.getElementById('legroomPref').checked;
+
+    fetch(`/seats?windowPref=${windowPref}&legroomPref=${legroomPref}`)
+      .then(response => response.json())
+      .then(data => renderSeats(data.occupiedSeats, data.recommendedSeats));
+  }
+
+  function renderSeats(occupiedSeats, recommendedSeats) {
+    plane.innerHTML = '';
+
+    for (let i = 0; i < 48; i++) {
+      const seat = document.createElement('div');
+      seat.className = 'seat';
+      seat.textContent = i + 1;
+
+      if (occupiedSeats.includes(i)) {
+        seat.classList.add('occupied');
+      } else {
+        seat.addEventListener('click', () => selectSeat(seat, i + 1));
+        if (recommendedSeats.includes(i)) {
+          seat.classList.add('recommended');
+        }
+      }
+
+      plane.appendChild(seat);
+
+      // Add a gap after 3 columns (middle aisle)
+      if ((i + 1) % 6 === 3) {
+        const gap = document.createElement('div');
+        gap.style.width = '50px';
+        plane.appendChild(gap);
+      }
+    }
+  }
+
+  function selectSeat(seat, seatNumber) {
+    document.querySelectorAll('.seat.selected').forEach(s => s.classList.remove('selected'));
+    seat.classList.add('selected');
+    selectedSeatDisplay.textContent = `Valitud koht: ${seatNumber}`;
+  }
+
+  window.onload = fetchSeats;
+</script>
 </body>
 </html>
