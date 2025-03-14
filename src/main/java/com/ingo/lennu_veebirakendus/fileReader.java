@@ -3,7 +3,7 @@ package com.ingo.lennu_veebirakendus;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
-import java.util.stream.*;
+
 
 public class fileReader {
 
@@ -32,17 +32,5 @@ public class fileReader {
         return flights;
     }
 
-    // Main method to test reading the file and displaying its content
-    public static void main(String[] args) {
-        List<Flight> flights = readFile();
 
-        // Output the content of the file
-        if (flights.isEmpty()) {
-            System.out.println("File is empty or not found.");
-        } else {
-            for (Flight flight : flights) {
-                System.out.println(flight);  // Using the toString method of Flight
-            }
-        }
-    }
 }

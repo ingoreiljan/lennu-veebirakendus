@@ -2,7 +2,6 @@ package com.ingo.lennu_veebirakendus;
 
 
 import org.springframework.web.bind.annotation.*;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -10,11 +9,11 @@ import java.util.stream.Collectors;
 @RestController
 public class Controller {
 
-    // New /lennud route
+
     @GetMapping("/lennud")
     public List<Flight> getLennud() {
         // Use fileReader to read the content of the file
-        return fileReader.readFile();  // Returns the list of lines from the file
+        return fileReader.readFile();
     }
 
     @GetMapping("/filter")
